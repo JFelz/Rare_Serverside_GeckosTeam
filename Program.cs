@@ -22,4 +22,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//Fun stuff
+
 app.Run();
