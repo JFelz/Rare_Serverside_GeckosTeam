@@ -7,6 +7,6 @@ namespace Rare_Serverside_GeckosTeam.Models
         public int Id { get; set; }
         public string Label { get; set; }
         public string ImageUrl { get; set; }
-        public List<Post> Posts { get; set; }
+        public List<PostReaction> Posts { get; set; }
     }
 }
