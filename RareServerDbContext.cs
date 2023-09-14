@@ -24,30 +24,30 @@ namespace Rare_Serverside_GeckosTeam
 
             modelBuilder.Entity<Post>().HasData(new Post[]
             {
-            new Post {Id = 1, RareUserId = 1, CategoryId = 1, Title = "Post 1", ImageUrl = "www.image1.com", Content = "post 1 content", IsApproved = true },
-            new Post {Id = 2, RareUserId = 2, CategoryId = 2, Title = "Post 2", ImageUrl = "www.image2.com", Content = "post 2 content", IsApproved = true },
-            new Post {Id = 3, RareUserId = 3, CategoryId = 3, Title = "Post 3", ImageUrl = "www.image3.com", Content = "post 3 content", IsApproved = true },
+                new Post {Id = 1, UserId = 1, CategoryId = 1, Title = "Post 1", ImageUrl = "www.image1.com", Content = "post 1 content", IsApproved = true },
+                new Post {Id = 2, UserId = 2, CategoryId = 2, Title = "Post 2", ImageUrl = "www.image2.com", Content = "post 2 content", IsApproved = true },
+                new Post {Id = 3, UserId = 3, CategoryId = 3, Title = "Post 3", ImageUrl = "www.image3.com", Content = "post 3 content", IsApproved = true },
             });
 
             modelBuilder.Entity<Comment>().HasData(new Comment[]
             {
                 new Comment { Id = 1, UserId = 1, PostId = 1, Content = "This is some smaple data 1", CreatedOn = new DateTime(2023, 1, 3)},
-                new Comment { Id = 1, UserId = 2, PostId = 2, Content = "This is some smaple data 2", CreatedOn = new DateTime(2023, 1, 4)},
-                new Comment { Id = 1, UserId = 3, PostId = 3, Content = "This is some smaple data 3", CreatedOn = new DateTime(2023, 1, 5)},
+                new Comment { Id = 2, UserId = 2, PostId = 2, Content = "This is some smaple data 2", CreatedOn = new DateTime(2023, 1, 4)},
+                new Comment { Id = 3, UserId = 3, PostId = 3, Content = "This is some smaple data 3", CreatedOn = new DateTime(2023, 1, 5)},
             });
 
             modelBuilder.Entity<PostReaction>().HasData(new PostReaction[]
             {
-            new PostReaction {Id = 1, UserId = 1, PostId = 1, ReactionId = 1 },
-            new PostReaction {Id = 2, UserId = 2, PostId = 2, ReactionId = 2 },
-            new PostReaction {Id = 3, UserId = 3, PostId = 3, ReactionId = 3 },
+                new PostReaction {Id = 1, UserId = 1, PostId = 1, ReactionId = 1 },
+                new PostReaction {Id = 2, UserId = 2, PostId = 2, ReactionId = 2 },
+                new PostReaction {Id = 3, UserId = 3, PostId = 3, ReactionId = 3 },
             });
 
             modelBuilder.Entity<Tag>().HasData(new Tag[]
             {
                 new Tag { Id = 1, Label = "Tag1" },
                 new Tag { Id = 2, Label = "Tag2" },
-                new Tag { Id = 3, Label = "Tag3" }
+                new Tag { Id = 3, Label = "Tag3" },
             });
 
             modelBuilder.Entity<Category>().HasData(new Category[]
