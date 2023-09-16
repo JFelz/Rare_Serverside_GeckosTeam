@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Rare_Serverside_GeckosTeam;
@@ -11,9 +12,11 @@ using Rare_Serverside_GeckosTeam;
 namespace Rare_Serverside_GeckosTeam.Migrations
 {
     [DbContext(typeof(RareServerDbContext))]
-    partial class RareServerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230916163139_PostTagsTest")]
+    partial class PostTagsTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
