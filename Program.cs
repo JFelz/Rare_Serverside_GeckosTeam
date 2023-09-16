@@ -137,7 +137,7 @@ app.MapGet("/api/posts", (RareServerDbContext db) =>
 {
     return db.Posts.ToList();
 });
-app.MapDelete("/api/songs/{id}", (RareServerDbContext db, int id) =>
+app.MapDelete("/api/posts/{id}", (RareServerDbContext db, int id) =>
 {
     Post postToDelete = db.Posts.SingleOrDefault(post => post.Id == id);
     if (postToDelete == null)
@@ -155,7 +155,7 @@ app.MapGet("/api/posts/{id}", (RareServerDbContext db, int id) =>
                     Include(p => p.Comments).
                     Include(p => p.Reactions).
                     Include(p => p.Tags).
-                    Single(s => s.Id == id);
+                    Single(p => p.Id == id);
 });
 app.MapGet("/api/userposts/{id}", (RareServerDbContext db, int Userid) =>
 {
@@ -164,7 +164,7 @@ app.MapGet("/api/userposts/{id}", (RareServerDbContext db, int Userid) =>
                     Include(p => p.Comments).
                     Include(p => p.Reactions).
                     Include(p => p.Tags).
-                    Where(s => s.UserId == Userid);
+                    Where(p => p.UserId == Userid);
 });
 app.MapPut("/api/posts/{id}", (RareServerDbContext db, int id, Post post) =>
 {
