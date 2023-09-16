@@ -13,6 +13,8 @@ namespace Rare_Serverside_GeckosTeam
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostReaction> PostsReaction { get; set; }
+        public DbSet<PostTag> PostTags { get; set; }
+
 
         public RareServerDbContext(DbContextOptions<RareServerDbContext> context) : base(context)
         {
