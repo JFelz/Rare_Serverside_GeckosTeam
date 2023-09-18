@@ -8,6 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+                      policy =>
+                      {
+                          policy.WithOrigins("https://localhost:7284",
+                                              "http://localhost:3000")
+                                               .AllowAnyHeader()
+                                               .AllowAnyMethod();
+                      });
+});
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -35,6 +47,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
@@ -387,6 +401,19 @@ app.MapGet("/users/{ID}/posts", (RareServerDbContext db, int ID) =>
 });
 
 //Create New User - Challenge for Auth. Leave for Last.
+
+app.MapGet("/checkuser/{uid}", (RareServerDbContext db, string uid) =>
+{
+    var user = db.Users.Where(x => x.Uid == uid).ToList();
+    if (uid == null)
+    {
+        return Results.NotFound();
+    }
+    else
+    {
+        return Results.Ok(user);
+    }
+});
 
 // Reaction Endpoints
 // Add Reaction to Post
