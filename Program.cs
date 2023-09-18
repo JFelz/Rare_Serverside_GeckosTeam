@@ -4,15 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Json;
 using Rare_Serverside_GeckosTeam;
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddDefaultPolicy(
                       policy =>
                       {
                           policy.WithOrigins("https://localhost:7284",
@@ -50,7 +48,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors();
 
 app.UseAuthorization();
 
