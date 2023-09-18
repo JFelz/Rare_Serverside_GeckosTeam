@@ -70,19 +70,6 @@ app.MapPut("/EditTag", async (RareServerDbContext db, int id, Tag updatedTag) =>
     return Results.Ok(existingTag);
 });
 
-// Remove Tag from Post
-app.MapPut("/RemoveTagFromPost", async (RareServerDbContext db, int postId, List<Tag> removedTags) =>
-{
-    var post = await db.Posts.Include(p => p.Tags).FirstOrDefaultAsync(p => p.Id == postId);
-    if (post == null)
-        return Results.NotFound();
-
-    post.Tags.RemoveAll(tag => removedTags.Any(removed => removed.Id == tag.Id));
-    await db.SaveChangesAsync();
-
-    return Results.Ok(post);
-});
-
 // Delete Tag
 app.MapDelete("/DeleteTag", async (RareServerDbContext db, int id) =>
 {
@@ -133,6 +120,7 @@ app.MapDelete("/RemoveTagFromPost", (RareServerDbContext db, int PostId, int Tag
 });
 
 // POST ENDPOINTS
+
 app.MapGet("/api/posts", (RareServerDbContext db) =>
 {
     return db.Posts.ToList();
@@ -353,4 +341,87 @@ app.MapDelete("/rareserver/unsubscribe", (RareServerDbContext db, int followerId
 
     return Results.Ok();
 });
+
+// User EndPoints
+
+// Get users
+app.MapGet("/users", (RareServerDbContext db) =>
+{
+    return db.Users.ToList();
+});
+
+// View Single User
+
+app.MapGet("/users/{Id}", (RareServerDbContext db, int Id) =>
+{
+    return db.Users.FirstOrDefault(x => x.Id == Id);
+});
+
+// Update User
+app.MapPut("/users/{UserId}", (RareServerDbContext db, int UserId, User NewUser) =>
+{
+    User SelectedUser = db.Users.FirstOrDefault(x => x.Id == UserId);
+    if (SelectedUser == null)
+    {
+        return Results.NotFound("This user is not found in the database. Please Try again!");
+    }
+
+    SelectedUser.FirstName = NewUser.FirstName;
+    SelectedUser.LastName = NewUser.LastName;
+    SelectedUser.Bio = NewUser.Bio;
+    SelectedUser.Email = NewUser.Email;
+    SelectedUser.ProfileImage = NewUser.ProfileImage;
+    SelectedUser.IsStaff = NewUser.IsStaff;
+    db.SaveChanges();
+    return Results.NoContent();
+
+});
+
+// View Users post
+app.MapGet("/users/{ID}/posts", (RareServerDbContext db, int ID) =>
+{
+
+    return db.Users.Where(x => x.Id == ID)
+                   .Include(p => p.Posts)
+                   .ToList();
+});
+
+//Create New User - Challenge for Auth. Leave for Last.
+
+// Reaction Endpoints
+// Add Reaction to Post
+/**
+ In the front end, an icon emoji will be under every post. Upon click, it will post that reaction Id to the Post's reaction table.
+ **/
+app.MapPost("/post/{PostId}", (RareServerDbContext db, int PostId, int ReactId, int UsersId) =>
+{
+    //Get Post
+    Post SelectedPost = db.Posts.FirstOrDefault(x => x.Id == PostId);
+    Reaction SelectedReaction = db.Reactions.FirstOrDefault(r => r.Id == ReactId);
+    User SelectedUser = db.Users.FirstOrDefault(u => u.Id == UsersId);
+
+    PostReaction NewPostReact = new PostReaction()
+    {
+        PostId = SelectedPost.Id,
+        ReactionId = SelectedReaction.Id,
+        UserId = SelectedUser.Id,
+    };
+
+    db.PostsReaction.Add(NewPostReact);
+    db.SaveChanges();
+    return Results.NoContent();
+});
+
+//Remove Reaction
+//Check it by user so it wont delete other peoples same reaction.
+app.MapDelete("/post", (RareServerDbContext db, int Id) =>
+{
+    PostReaction DeletedReaction = db.PostsReaction.FirstOrDefault(x => x.Id == Id);
+
+    db.PostsReaction.Remove(DeletedReaction);
+    db.SaveChanges();
+    return Results.Ok();
+
+});
+
 app.Run();
