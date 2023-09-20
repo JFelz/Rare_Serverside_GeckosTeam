@@ -197,7 +197,7 @@ app.MapGet("/Comments", (RareServerDbContext db) =>
     return db.Comments.ToList();
 });
 //Get comment by ID
-app.MapGet("/api/CommentsbyID", (RareServerDbContext db, int id) =>
+app.MapGet("/api/CommentsbyID/{id}", (RareServerDbContext db, int id) =>
 {
     var comment = db.Comments.Where(s => s.Id == id)
     .Include(x => x.User)
