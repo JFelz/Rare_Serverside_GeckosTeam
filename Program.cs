@@ -139,6 +139,7 @@ app.MapGet("/api/posts", (RareServerDbContext db) =>
 {
     return db.Posts.ToList();
 });
+
 app.MapDelete("/api/posts/{id}", (RareServerDbContext db, int id) =>
 {
     Post postToDelete = db.Posts.SingleOrDefault(post => post.Id == id);
@@ -150,15 +151,30 @@ app.MapDelete("/api/posts/{id}", (RareServerDbContext db, int id) =>
     db.SaveChanges();
     return Results.Ok(db.Posts);
 });
+
 app.MapGet("/api/posts/{id}", (RareServerDbContext db, int id) =>
 {
-    return db.Posts.Include(p => p.User).
-                    Include(p => p.Category).
-                    Include(p => p.Comments).
-                    Include(p => p.Reactions).
-                    Include(p => p.Tags).
-                    Single(p => p.Id == id);
+    var post = db.Posts
+                 .Include(p => p.User)
+                 .Include(p => p.Category)
+                 .Include(p => p.Comments)
+                 .Include(p => p.Reactions)
+                 .Single(p => p.Id == id);
+
+    var tags = db.PostTags
+                 .Where(pt => pt.PostId == id)
+                 .Select(pt => pt.Tag)
+                 .ToList();
+
+    var postData = new
+    {
+        Post = post,
+        Tags = tags
+    };
+
+    return Results.Ok(postData);
 });
+
 app.MapGet("/api/userposts/{id}", (RareServerDbContext db, int Userid) =>
 {
     return db.Posts.Include(p => p.User).
@@ -168,6 +184,7 @@ app.MapGet("/api/userposts/{id}", (RareServerDbContext db, int Userid) =>
                     Include(p => p.Tags).
                     Where(p => p.UserId == Userid);
 });
+
 app.MapPut("/api/posts/{id}", (RareServerDbContext db, int id, Post post) =>
 {
     Post postToUpdate = db.Posts.SingleOrDefault(p => p.Id == id);
@@ -182,6 +199,7 @@ app.MapPut("/api/posts/{id}", (RareServerDbContext db, int id, Post post) =>
     db.SaveChanges();
     return Results.Ok(postToUpdate);
 });
+
 app.MapPost("/api/posts", (RareServerDbContext db, Post post) =>
 {
     db.Posts.Add(post);
