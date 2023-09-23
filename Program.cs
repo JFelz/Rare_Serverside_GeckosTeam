@@ -1,8 +1,8 @@
-using System.Text.Json.Serialization;
-using Rare_Serverside_GeckosTeam.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using Rare_Serverside_GeckosTeam;
+using Rare_Serverside_GeckosTeam.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -253,6 +253,18 @@ app.MapGet("/rareserver/categories", (RareServerDbContext db) =>
     }
 
     return Results.Ok(categories);
+});
+
+// Get Category By Id
+
+app.MapGet("/rareserver/categories/{id}", (RareServerDbContext db, int id) =>
+{
+    Category category = db.Categories.SingleOrDefault(c => c.Id == id);
+    if (category == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(category);
 });
 
 // Post Category
