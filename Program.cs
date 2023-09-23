@@ -159,20 +159,21 @@ app.MapGet("/api/posts/{id}", (RareServerDbContext db, int id) =>
                  .Include(p => p.Category)
                  .Include(p => p.Comments)
                  .Include(p => p.Reactions)
+                 .Include(p => p.Tags)
                  .Single(p => p.Id == id);
 
-    var tags = db.PostTags
-                 .Where(pt => pt.PostId == id)
-                 .Select(pt => pt.Tag)
-                 .ToList();
+    //var tags = db.Tags
+    //             .Where(pt => pt.PostId == id)
+    //             .Select(pt => pt.Tag)
+    //             .ToList();
 
-    var postData = new
-    {
-        Post = post,
-        Tags = tags
-    };
+    //var postData = new
+    //{
+    //    Post = post,
+    //    Tags = tags
+    //};
 
-    return Results.Ok(postData);
+    return Results.Ok(post);
 });
 
 app.MapGet("/api/userposts/{id}", (RareServerDbContext db, int Userid) =>
@@ -202,7 +203,27 @@ app.MapPut("/api/posts/{id}", (RareServerDbContext db, int id, Post post) =>
 
 app.MapPost("/api/posts", (RareServerDbContext db, Post post) =>
 {
-    db.Posts.Add(post);
+    Post newPost = new()
+    {
+        Content = post.Content,
+        Title = post.Title,
+        ImageUrl = post.ImageUrl,
+        IsApproved = post.IsApproved,
+        PublicationDate = post.PublicationDate,
+    };
+
+    newPost.User = db.Users.FirstOrDefault(user => user.Id == post.UserId);
+    newPost.Category = db.Categories.FirstOrDefault(cat => cat.Id == post.CategoryId);
+    if (post.Tags?.Count > 0)
+    {
+        newPost.Tags = new();
+        foreach (var postTags in post.Tags)
+        {
+            Tag newTag = db.Tags.FirstOrDefault(tag => tag.Id == postTags.Id);
+            newPost.Tags.Add(newTag);
+        }
+    }
+    db.Posts.Add(newPost);
     db.SaveChanges();
     return Results.Created($"/api/posts/{post.Id}", post);
 });
