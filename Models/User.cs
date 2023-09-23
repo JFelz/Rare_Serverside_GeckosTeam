@@ -19,5 +19,6 @@ namespace Rare_Serverside_GeckosTeam.Models
         public List<Post> Posts { get; set; }
         public List<Subscription> Subscriptions { get; set; }
         public List<PostReaction> PostReactions { get; set; }
+
     }
 }

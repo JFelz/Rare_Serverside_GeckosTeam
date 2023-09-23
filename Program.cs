@@ -446,11 +446,23 @@ app.MapGet("/checkuser/{uid}", (RareServerDbContext db, string uid) =>
 });
 
 // Reaction Endpoints
+
+//Get Reactions
+app.MapGet("/reactions", (RareServerDbContext db) =>
+{
+    return db.Reactions.ToList();
+});
+
+//Get Single Reaction
+app.MapGet("/reactions/{Id}", (RareServerDbContext db, int Id) =>
+{
+    return db.Reactions.FirstOrDefault(x => x.Id == Id);
+});
 // Add Reaction to Post
 /**
  In the front end, an icon emoji will be under every post. Upon click, it will post that reaction Id to the Post's reaction table.
  **/
-app.MapPost("/post/{PostId}", (RareServerDbContext db, int PostId, int ReactId, int UsersId) =>
+app.MapPost("/post/postreaction", (RareServerDbContext db, int PostId, int ReactId, int UsersId) =>
 {
     //Get Post
     Post SelectedPost = db.Posts.FirstOrDefault(x => x.Id == PostId);
