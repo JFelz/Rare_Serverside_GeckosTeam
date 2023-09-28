@@ -251,6 +251,15 @@ app.MapPost("api/Comment", async (RareServerDbContext db, Comment comment) =>
     db.SaveChanges();
     return Results.Created($"/api/songs{comment.Id}", comment);
 });
+//Get comment by postID
+app.MapGet("/api/CommentsbypostID/{id}", (RareServerDbContext db, int id) =>
+{
+    var comment = db.Comments.Where(s => s.PostId == id)
+    .Include(x => x.User)
+    .Include(s => s.Post).ToList();
+    return comment;
+}
+);
 //update Comment
 app.MapPut("api/Comments/{id}", async (RareServerDbContext db, int id, Comment comment) =>
 {
