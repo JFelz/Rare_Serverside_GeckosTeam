@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Rare_Serverside_GeckosTeam;
 using Rare_Serverside_GeckosTeam.Models;
 using System.Text.Json.Serialization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
@@ -396,15 +399,15 @@ app.MapGet("/users", (RareServerDbContext db) =>
 
 // View Single User
 
-app.MapGet("/users/{Id}", (RareServerDbContext db, int Id) =>
+app.MapGet("/users/{uid}", (RareServerDbContext db, string uid) =>
 {
-    return db.Users.FirstOrDefault(x => x.Id == Id);
+    return db.Users.FirstOrDefault(x => x.Uid == uid);
 });
 
 // Update User
-app.MapPut("/users/{UserId}", (RareServerDbContext db, int UserId, User NewUser) =>
+app.MapPut("/users/update/{uid}", (RareServerDbContext db, string uid, User NewUser) =>
 {
-    User SelectedUser = db.Users.FirstOrDefault(x => x.Id == UserId);
+    User SelectedUser = db.Users.FirstOrDefault(x => x.Uid == uid);
     if (SelectedUser == null)
     {
         return Results.NotFound("This user is not found in the database. Please Try again!");
@@ -417,7 +420,7 @@ app.MapPut("/users/{UserId}", (RareServerDbContext db, int UserId, User NewUser)
     SelectedUser.ProfileImage = NewUser.ProfileImage;
     SelectedUser.IsStaff = NewUser.IsStaff;
     db.SaveChanges();
-    return Results.NoContent();
+    return Results.Created("/users/update/{uid}", SelectedUser);
 
 });
 
@@ -443,6 +446,24 @@ app.MapGet("/checkuser/{uid}", (RareServerDbContext db, string uid) =>
     {
         return Results.Ok(user);
     }
+});
+
+app.MapPost("/register", (RareServerDbContext db, User payload) =>
+{
+    User NewUser = new User()
+    {
+        FirstName = payload.FirstName,
+        LastName = payload.LastName,
+        Bio = payload.Bio,
+        Email = payload.Email,
+        ProfileImage = payload.ProfileImage,
+        IsStaff = payload.IsStaff,
+        Uid = payload.Uid,
+        Active = payload.Active,
+    };
+    db.Users.Add(NewUser);
+    db.SaveChanges();
+    return Results.Ok();
 });
 
 // Reaction Endpoints
