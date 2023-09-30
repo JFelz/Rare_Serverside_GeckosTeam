@@ -62,10 +62,20 @@ app.MapControllers();
 // Create New Tag
 app.MapPost("/CreateNewTag", async (RareServerDbContext db, Tag tag) =>
 {
-    db.Tags.Add(tag);
-    await db.SaveChangesAsync();
-    return Results.Ok(tag);
+    try
+    {
+        db.Tags.Add(tag);
+        await db.SaveChangesAsync();
+
+        // Return only the label
+        return Results.Ok(new { label = tag.Label });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = "Failed to create tag", message = ex.Message });
+    }
 });
+
 
 // Get All Tags
 app.MapGet("/GetAllTags", (RareServerDbContext db) =>
