@@ -215,9 +215,9 @@ app.MapPost("api/Comment", async (RareServerDbContext db, Comment comment) =>
 //Get comment by postID
 app.MapGet("/api/CommentsbypostID/{id}", (RareServerDbContext db, int id) =>
 {
-    var comment = db.Comments.Where(s => s.PostId == id)
-    .Include(x => x.User)
-    .Include(s => s.Post).ToList();
+    var comment = db.Comments.Where(s => s.PostId == id);
+   // .Include(x => x.User)
+    // .Include(s => s.Post).ToList();
     return comment;
 }
 );
