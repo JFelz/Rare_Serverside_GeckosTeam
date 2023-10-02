@@ -479,22 +479,35 @@ app.MapGet("/reactions/{Id}", (RareServerDbContext db, int Id) =>
 {
     return db.Reactions.FirstOrDefault(x => x.Id == Id);
 });
+
+// GET postReaction details based off UserId
+app.MapGet("/posts/user/{UserId}/reactions/", (RareServerDbContext db, int UserId) =>
+{
+    return db.PostsReaction.Where(x => x.UserId == UserId).ToList();
+});
+
+// GET single postReaction
+app.MapGet("/post/postreaction/{PostId}/", (RareServerDbContext db, int PostId) =>
+{
+    return db.PostsReaction.Where(x => x.PostId == PostId).ToList();
+});
+
 // Add Reaction to Post
 /**
  In the front end, an icon emoji will be under every post. Upon click, it will post that reaction Id to the Post's reaction table.
  **/
-app.MapPost("/post/postreaction", (RareServerDbContext db, int PostId, int ReactId, int UsersId) =>
+app.MapPost("/post/postreaction", (RareServerDbContext db, PostReaction payload) =>
 {
     //Get Post
-    Post SelectedPost = db.Posts.FirstOrDefault(x => x.Id == PostId);
-    Reaction SelectedReaction = db.Reactions.FirstOrDefault(r => r.Id == ReactId);
-    User SelectedUser = db.Users.FirstOrDefault(u => u.Id == UsersId);
+/*    Post SelectedPost = db.Posts.FirstOrDefault(x => x.Id == payload.PostId);
+    Reaction SelectedReaction = db.Reactions.FirstOrDefault(r => r.Id == payload.ReactionId);
+    User SelectedUser = db.Users.FirstOrDefault(u => u.Id == payload.UserId);*/
 
     PostReaction NewPostReact = new PostReaction()
     {
-        PostId = SelectedPost.Id,
-        ReactionId = SelectedReaction.Id,
-        UserId = SelectedUser.Id,
+        PostId = payload.PostId,
+        ReactionId = payload.ReactionId,
+        UserId = payload.UserId,
     };
 
     db.PostsReaction.Add(NewPostReact);
@@ -502,8 +515,26 @@ app.MapPost("/post/postreaction", (RareServerDbContext db, int PostId, int React
     return Results.NoContent();
 });
 
+// UPDATE REACTION
+app.MapPut("/postreaction/update/{id}", (RareServerDbContext db, int id, PostReaction payload) =>
+{
+    PostReaction SelectedTable = db.PostsReaction.FirstOrDefault(x => x.Id == id);
+    if (SelectedTable == null)
+    {
+        return Results.NotFound("This user is not found in the database. Please Try again!");
+    }
+
+    SelectedTable.PostId = payload.PostId;
+    SelectedTable.ReactionId = payload.ReactionId;
+    SelectedTable.UserId = payload.UserId;
+
+    db.SaveChanges();
+    return Results.Created("/postreaction/update/{id}", SelectedTable);
+
+});
+
 //Remove Reaction
-//Check it by user so it wont delete other peoples same reaction.
+
 app.MapDelete("/post", (RareServerDbContext db, int Id) =>
 {
     PostReaction DeletedReaction = db.PostsReaction.FirstOrDefault(x => x.Id == Id);
