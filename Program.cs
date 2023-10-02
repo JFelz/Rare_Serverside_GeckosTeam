@@ -201,11 +201,24 @@ app.MapGet("/api/userposts/{id}", (RareServerDbContext db, int Userid) =>
 
 app.MapPut("/api/posts/{id}", (RareServerDbContext db, int id, Post post) =>
 {
-    Post postToUpdate = db.Posts.SingleOrDefault(p => p.Id == id);
+    Post postToUpdate = db.Posts
+        .Include(p => p.Tags)
+        .SingleOrDefault(p => p.Id == id);
     if (postToUpdate == null)
     {
         return Results.NotFound();
     }
+
+    Tag updatedTag = db.Tags.SingleOrDefault(t => t.Id == post.Tags[0].Id);
+
+
+    if (updatedTag != null)
+    {
+        postToUpdate.Tags.Clear();
+        postToUpdate.Tags.Add(updatedTag);
+    }
+
+
     postToUpdate.CategoryId = post.CategoryId;
     postToUpdate.Title = post.Title;
     postToUpdate.ImageUrl = post.ImageUrl;
